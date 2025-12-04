@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Responsive Navbar</title>
+    <link rel="stylesheet" href="./CSS/style.css">
+</head>
+<body>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <!-- Section 1: Logo -->
+            <a href="#" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color);">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Dev<span>Sphere</span>
+            </a>
+
+            <!-- Section 2: Nav Links -->
+            <ul class="nav-menu" id="nav-menu">
+                <li class="dropdown" id="features-dropdown">
+                    <a href="#" class="nav-link">
+                        Features
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item"><a href="#">Analytics Dashboard</a></li>
+                        <li class="dropdown-item"><a href="#">Team Collaboration</a></li>
+                        <li class="dropdown-item"><a href="#">Cloud Integration</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="nav-link">Spotlight</a></li>
+                <li><a href="#" class="nav-link">Testimonials</a></li>
+
+                <!-- Mobile Only Buttons Container (Visible ONLY when the menu drawer is open on mobile) -->
+                <li class="mobile-actions">
+                    <a href="#" class="btn btn-ghost">Sign In</a>
+                    <a href="#" class="btn btn-primary">Get Early Access</a>
+                </li>
+            </ul>
+
+            <!-- Section 3: Desktop Buttons (Hidden on mobile) -->
+            <div class="nav-actions">
+                <a href="#" class="btn btn-ghost">Sign In</a>
+                <a href="#" class="btn btn-primary">Get Early Access</a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Demo Content -->
+    <div class="hero">
+        <h1>Welcome to the Future</h1>
+        <p>A demonstration of a professional, responsive navbar with three distinct sections, CSS variables, and modern
+            interactions.</p>
+    </div>
+</body>
+<script src="./JS/script.js"></script>
+</html>
