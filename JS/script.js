@@ -1,58 +1,174 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    const overlay = document.getElementById('overlay');
-    const navbar = document.getElementById('navbar');
-    const featuresDropdown = document.getElementById('features-dropdown');
-    const featuresLink = featuresDropdown.querySelector('.nav-link');
+// small helpers
+        document.getElementById('yr').textContent = new Date().getFullYear();
 
-    // Toggle Mobile Menu
-    function toggleMenu() {
-        const isActive = navMenu.classList.contains('active');
+        // New feature init functions (Demo/Modal)
+        const modal = document.getElementById('modal');
+        const demoModal = document.getElementById('demo-modal');
 
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-        overlay.classList.toggle('active');
+        function openSignup() { showModal(); }
+        function openSignIn() { alert('Sign in flow — integrate auth (placeholder)'); }
+        function showDemo() { showDemoModal(); }
+        function openDemo() { showDemoModal(); } // Alias for consistency
 
-        // If the menu is closing, also explicitly close the dropdown
-        if (isActive) {
-            featuresDropdown.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        } else {
-            document.body.style.overflow = 'hidden';
+        // modal controls
+        function showModal() {
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden', 'false');
+            // Focus first input for accessibility
+            setTimeout(() => modal.querySelector('input')?.focus(), 50);
         }
-    }
-
-    hamburger.addEventListener('click', toggleMenu);
-    overlay.addEventListener('click', toggleMenu);
-
-    // Scroll Effect (Add shadow on scroll)
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 10) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+        function closeModal() {
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
         }
-    });
 
-    // Mobile Dropdown Handling
-    featuresLink.addEventListener('click', (e) => {
-        // Only activate click toggle on mobile screens
-        if (window.innerWidth <= 768) {
-            e.preventDefault(); // Prevent link navigation
-            featuresDropdown.classList.toggle('active');
+        function showDemoModal() {
+            demoModal.style.display = 'flex';
+            demoModal.setAttribute('aria-hidden', 'false');
         }
-    });
+        function closeDemo() {
+            demoModal.style.display = 'none';
+            demoModal.setAttribute('aria-hidden', 'true');
+            // stop video by resetting src
+            const frame = document.getElementById('demoFrame');
+            if (frame && frame.src) {
+                const src = frame.src;
+                frame.src = src;
+            }
+        }
 
-    // Close menu when resizing from mobile to desktop
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            // Reset all mobile states
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-            overlay.classList.remove('active');
-            featuresDropdown.classList.remove('active');
-            document.body.style.overflow = 'auto';
+        // Waitlist form handler (mock)
+        function evtWaitlist(e) {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            // Basic validation
+            const inputs = [...form.querySelectorAll('input')];
+            const invalid = inputs.some(i => !i.value.trim());
+            if (invalid) {
+                alert('Please complete all fields.');
+                inputs.find(i => !i.value.trim())?.focus();
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                const prevText = submitBtn.textContent;
+                submitBtn.textContent = 'Joining...';
+
+                setTimeout(() => {
+                    alert('Thanks — you are on the waitlist. (demo only)');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = prevText;
+                    closeModal();
+                }, 900);
+            }
         }
-    });
-});
+
+        // ADDED: Mobile menu toggles
+        const mobileMenu = document.getElementById('mobileMenu');
+        const hambtn = document.getElementById('hambtn');
+
+        function openMobileMenu() {
+            mobileMenu.style.display = 'block';
+            setTimeout(() => mobileMenu.classList.add('open'), 10);
+            mobileMenu.setAttribute('aria-hidden', 'false');
+            hambtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            setTimeout(() => mobileMenu.style.display = 'none', 320);
+            mobileMenu.setAttribute('aria-hidden', 'true');
+            hambtn.setAttribute('aria-expanded', 'false');
+        }
+
+        hambtn?.addEventListener('click', () => {
+            const open = mobileMenu.style.display === 'block';
+            if (open) closeMobileMenu(); else openMobileMenu();
+        });
+
+        // Close mobile menu when clicking outside panel
+        mobileMenu?.addEventListener('click', (ev) => {
+            if (ev.target === mobileMenu) closeMobileMenu();
+        });
+
+        // ADDED: FAQ accordion logic
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const q = item.querySelector('.faq-q');
+            q.addEventListener('click', () => toggleFaq(item));
+            q.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') toggleFaq(item);
+            });
+        });
+
+        function toggleFaq(item) {
+            const open = item.classList.toggle('open');
+            const btn = item.querySelector('.faq-q');
+            if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            // change sign
+            const sign = item.querySelector('.faq-q .muted-sm');
+            if (sign) sign.textContent = open ? '−' : '+';
+        }
+
+        // ADDED: Smooth scroll for internal links & mobile menu close
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                const href = a.getAttribute('href');
+                if (href === '#') return;
+                const el = document.querySelector(href);
+                if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // close mobile menu if open
+                    if (mobileMenu?.style.display === 'block') closeMobileMenu();
+                }
+            });
+        });
+
+        // Simple accessibility: focus trapping for modals (full feature init)
+        function trapFocus(modalElem, closeFn) {
+            const focusable = modalElem.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            function keyListener(e) {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        }
+                    } else {
+                        if (document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                }
+                if (e.key === 'Escape') {
+                    closeFn();
+                }
+            }
+            modalElem.addEventListener('keydown', keyListener);
+            return () => modalElem.removeEventListener('keydown', keyListener);
+        }
+
+        // Attach focus trap when modals open
+        const observer = new MutationObserver(() => {
+            if (modal.style.display === 'flex') {
+                trapFocus(modal, closeModal);
+            }
+            if (demoModal.style.display === 'flex') {
+                trapFocus(demoModal, closeDemo);
+            }
+        });
+        observer.observe(document.body, {
+            attributes: true,
+            childList: true,
+            subtree: true
+        });
